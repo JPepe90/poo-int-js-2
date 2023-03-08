@@ -197,6 +197,7 @@ function createStudent({
 } = {}) {
   const private = {
     "_name": name,
+    "_learningPaths": learningPaths,
   };
 
   const public = {
@@ -235,11 +236,39 @@ function createStudent({
       if (newName.length > 0) {
         private._name = newName;
       }
-    }
+    },
+    get learningPaths() {
+      return private._learningPaths;
+    },
+    set learningPaths(newLP) {
+      // ---------------------------------------------------------------------------
+      // ----- Duck Typing (ver referencia readme)
+      if (!newLP.name) {
+        console.warn("La nueva ruta de aprendizaje debe tener nombre");
+        return;
+      }
+
+      if (!newLP.courses) {
+        console.warn("La nueva ruta de aprendizaje no tiene cursos");
+        return;
+      }
+
+      if (!isArray(newLP.courses)) {
+        console.warn("La nueva ruta de aprendizaje debe ser una lista de cursos");
+        return;
+      }
+
+      if (newLP.courses.length = 0) {
+        console.warn("La nueva ruta de aprendizaje debe tener al menos 1 curso");
+        return;
+      }
+
+      private._learningPaths.push(newLP);
+    },
   };
 
-  Object.defineProperty(public, readName(), { writable: false, configuragle: false });
-  Object.defineProperty(public, changeName(), { writable: false, configuragle: false });
+  // Object.defineProperty(public, readName(), { writable: false, configuragle: false });
+  // Object.defineProperty(public, changeName(), { writable: false, configuragle: false });
 
   return public;
 }
@@ -254,3 +283,85 @@ const natalia = createStudent({
   email: "natalianatalia@nat.net",
   instagram: "nati_ok"
 });
+
+function LearningPath({
+  name = requiredParameters("name"),
+  courses = [],  
+}) {
+  this.name = name;
+  this.courses = courses;
+
+  // const private = {
+  //   "_name": name,
+  //   "_courses": courses,
+  // };
+
+  // const public = {
+  //   get name() {
+  //     return private._name;
+  //   },
+  //   set name(newName) {
+  //     if (newName.length > 0) {
+  //       private._name = newName;
+  //     }
+  //   },
+  //   get courses() {
+  //     return private._courses;
+  //   },
+  // };
+
+  // return public;
+}
+
+function Student({
+  name = requiredParameters("name"),
+  age,
+  email = requiredParameters("email"),
+  twitter,
+  facebook,
+  instagram,
+  approvedCourses = [],
+  learningPaths = [],
+} = {}) {
+  this.name = name;
+  this.age = age;
+  this.email = email;
+  this.socialMedia = {
+    twitter,
+    facebook,
+    instagram,
+  },
+  this.approvedCourses = approvedCourses;
+
+  // ------------------------------------------------------------------
+  // ----- InstanceOf
+  if (isArray(learningPaths)) {
+    this.learningPaths = [];
+
+    for (learningPathIndex in learningPaths) {
+      if (learningPaths[learningPathIndex] instanceof LearningPath) {
+        this.learningPaths.push(learningPaths[learningPathIndex]);
+      } 
+    }
+  }  
+}
+
+const pedro = new Student({ name: "Pedro", email: "pesmeralda@uol.com.ar" });
+
+console.log(pedro instanceof Student); // true
+console.log(natalia instanceof Student); // false porque esz instancia de createStudent
+
+const escuelaweb = new LearningPath({ name: "Escuela de Desarrollo Web" });
+const escueladata = new LearningPath({ name: "Escuela de Data Science" });
+const alan = new Student({
+  name: "Alan",
+  email: "alanfritz@msn.com",
+  learningPaths: [
+    escuelaweb, // Esta escuela se agregará porque es instancia del prototipo LearningPaths
+    escueladata, // Esta escuela se agregará porque es instancia del prototipo LearningPaths
+    { 
+      name: "Escuela No Instanciada", // Esta no se agregará
+      courses: [],
+    },
+  ]
+})
