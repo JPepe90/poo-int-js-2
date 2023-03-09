@@ -154,6 +154,84 @@ function deepCopy(subject) {
   return copySubject; // objeto a devolver
 }
 
+// ----------------------------------------------------------------------
+// ----- Super Object!!!
+// con Clases
+class SuperObject {
+  static isObject(subject) {
+    return typeof subject == 'object';
+  }
+
+  static deepCopy(subject) {
+    let copySubject;
+  
+    const subjectIsArray = isArray(subject);
+    const subjectIsObject = isObject(subject);
+  
+    if (subjectIsArray) {
+      copySubject = [];
+    } else if (subjectIsObject) {
+      copySubject = {};
+    } else {
+      return subject; // devuelvo el sujeto
+    }
+  
+    for (key in subject) {
+      const keyIsObject = isObject(subject[key]);
+  
+      if (keyIsObject) {
+        copySubject[key] = deepCopy(subject[key]);
+      } else {
+        if (subjectIsArray) {
+          copySubject.push(subject[key]);
+        } else {
+          copySubject[key] = subject[key];
+        }
+      }
+    }
+  
+    return copySubject; // objeto a devolver
+  }
+}
+
+// con Prototipos
+function SuperObjectProt() {} // creo el prototipo SuperObject
+// le agrego el metodo estático con la siguiente sintaxis
+SuperObjectProt.deepCopy = function (subject) {
+  let copySubject;
+
+  const subjectIsArray = isArray(subject);
+  const subjectIsObject = isObject(subject);
+
+  if (subjectIsArray) {
+    copySubject = [];
+  } else if (subjectIsObject) {
+    copySubject = {};
+  } else {
+    return subject; // devuelvo el sujeto
+  }
+
+  for (key in subject) {
+    const keyIsObject = isObject(subject[key]);
+
+    if (keyIsObject) {
+      copySubject[key] = deepCopy(subject[key]);
+    } else {
+      if (subjectIsArray) {
+        copySubject.push(subject[key]);
+      } else {
+        copySubject[key] = subject[key];
+      }
+    }
+  }
+
+  return copySubject; // objeto a devolver
+}
+
+SuperObjectProt.isObject = function (subject) {
+  return typeof subject == 'object';
+}
+
 
 // ----------------------------------------------------------------------
 // ----- Base Student 
@@ -333,15 +411,30 @@ function Student({
   },
   this.approvedCourses = approvedCourses;
 
+  const private = {
+    "_learningPaths": [],
+  };
+
+  // ---------------------------------------------------------------------
+  // ----- Atributos y metodos privados en prototipos
+  Object.defineProperty(this, "learningPaths", {
+    get() {
+      return private["_learningPaths"];
+    },
+    set(newLP) {
+      if (newLP instanceof LearningPath) {
+        private["_learningPaths"].push(newLP);
+      } else {
+        console.warn("No es una instancia de LearningPaths");
+      }
+    }
+  });
+
   // ------------------------------------------------------------------
   // ----- InstanceOf
   if (isArray(learningPaths)) {
-    this.learningPaths = [];
-
     for (learningPathIndex in learningPaths) {
-      if (learningPaths[learningPathIndex] instanceof LearningPath) {
-        this.learningPaths.push(learningPaths[learningPathIndex]);
-      } 
+      this.learningPaths = learningPaths[learningPathIndex];
     }
   }  
 }
@@ -365,3 +458,5 @@ const alan = new Student({
     },
   ]
 })
+
+

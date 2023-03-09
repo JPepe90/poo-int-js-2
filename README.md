@@ -32,3 +32,9 @@ En el setter de learningPaths de la funcion createStudent() está el codigo corr
 
 ## Instance Of
 Instanceof me permite saber si un objecto que tiene la misma estructura que un determinado prototipo fue efectivamente instanciado desde ese prototipo o no. (ver ejemplo const alan + aclaraciones instanceOf en la funcion Student()).
+
+# Atributos y metodos privados en prototipos
+Formas de generar metodos y atributos privados en un prototipo. Es más complejo de entender, interactúan variables con "_" y sin "_" para hacer el llamado a la funcion publica y el posterior guardado en la variable privada.
+
+# Metodos estáticos
+Se escribió el codigo para los metodos estaticos en la clase SuperObject y el prototipo SuperObjectProt, estos incluyen las funciones deepcopy() e isObject(). Se ejecutaron pruebas desde la consola el navegador con resultados exitosos. Revisar sintaxis para ambas formas de codeo.
